@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.2.1 (2026-05-01)
+
+### Fixed
+
+- fix broken links due to refactoring
+- dangling reference
+
+### Changed
+
+- update plugin manifests for v1.2.1
+- add tessl linting for broken links in skills
+- publish to tessl on release
+- onboard skills to tessl.io
+
+
 ## v1.2.0 (2026-05-01)
 
 ### Added
