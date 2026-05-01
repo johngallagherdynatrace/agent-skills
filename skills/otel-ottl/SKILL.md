@@ -13,34 +13,8 @@ Use OTTL to transform, filter, and manipulate telemetry data inside the OpenTele
 ## Components that use OTTL
 
 OTTL is not limited to the transform and filter processors.
-The following Collector components accept OTTL expressions in their configuration.
-
-### Processors
-
-| Component | Use case |
-|-----------|----------|
-| [transform](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/transformprocessor) | Modify, enrich, or redact telemetry (set attributes, rename fields, truncate values) |
-| [filter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/filterprocessor) | Drop telemetry entirely (discard metrics by name, drop spans by status, remove noisy logs) |
-| [attributes](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/attributesprocessor) | Insert, update, delete, or hash resource and record attributes |
-| [span](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/spanprocessor) | Rename spans and set span status based on attribute values |
-| [tailsampling](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/tailsamplingprocessor) | Sample traces based on OTTL conditions (e.g., keep error traces, drop health checks) |
-| [cumulativetodelta](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/cumulativetodeltaprocessor) | Convert cumulative metrics to delta temporality with OTTL-based metric selection |
-| [logdedup](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/logdedupprocessor) | Deduplicate log records using OTTL conditions |
-| [lookup](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/lookupprocessor) | Enrich telemetry by looking up values from external tables using OTTL expressions |
-
-### Connectors
-
-| Component | Use case |
-|-----------|----------|
-| [routing](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/routingconnector) | Route telemetry to different pipelines based on OTTL conditions |
-| [count](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/countconnector) | Count spans, metrics, or logs matching OTTL conditions and emit as metrics |
-| [sum](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/sumconnector) | Sum numeric values from telemetry matching OTTL conditions and emit as metrics |
-| [signaltometrics](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/signaltometricsconnector) | Generate metrics from spans or logs using OTTL expressions for attribute extraction |
-### Receivers
-
-| Component | Use case |
-|-----------|----------|
-| [hostmetrics](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/hostmetricsreceiver) | Filter host metrics at collection time using OTTL conditions |
+Processors (transform, filter, attributes, span, tailsampling, cumulativetodelta, logdedup, lookup), connectors (routing, count, sum, signaltometrics), and the hostmetrics receiver all accept OTTL expressions.
+See [components](./rules/components.md) for the full list with use cases.
 
 ## OTTL syntax
 
@@ -114,6 +88,31 @@ OTTL uses `nil` for absence checking (not `null`):
 ```
 resource.attributes["service.name"] != nil
 ```
+
+## Validation workflow
+
+Before deploying OTTL expressions to production, validate them with a staged approach:
+
+1. **Validate config syntax** — run `otelcol validate --config=config.yaml` to catch compilation errors (unknown functions, invalid paths, syntax errors) before starting the Collector.
+2. **Test with the debug exporter** — route transformed telemetry to a `debug` exporter and inspect the output to verify attributes, values, and dropped records behave as expected:
+
+```yaml
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [transform, batch]
+      exporters: [debug]   # swap in production exporter once validated
+```
+
+3. **Set `error_mode: ignore` in production** — see [Error handling](#error-handling) below to avoid silently dropping telemetry.
+4. **Promote to production exporters** — once the debug output confirms correct behavior, replace the `debug` exporter with the production exporter.
+
+For destructive operations (redaction, deletion, filtering), always complete steps 1–3 before promoting.
 
 ## Common patterns
 
@@ -302,7 +301,7 @@ processors:
 
 ### Enrich telemetry with static attributes
 
-When `resourcedetection` or `k8sattributes` processors are not available — for example, in non-Kubernetes deployments or when the Collector runs outside the cluster — set resource attributes explicitly.
+Use the `resource` processor (not the `transform` processor) for static resource attributes — it operates at the resource level directly, while `transform` requires a `resource` context and explicit path expressions.
 
 ```yaml
 processors:
@@ -315,9 +314,6 @@ processors:
         value: prod-us-west-2
         action: upsert
 ```
-
-Use the `resource` processor (not the `transform` processor) for static resource attributes.
-The `resource` processor operates at the resource level directly, while `transform` requires a `resource` context and explicit path expressions.
 
 To copy a resource attribute down to the span or log level — for example, when the backend does not propagate resource context — use the transform processor:
 
@@ -374,31 +370,6 @@ processors:
 OTTL statements compile once at startup and execute as optimized function chains at runtime.
 There is no need to optimize for compilation speed — focus on reducing the number of statements that evaluate per telemetry item.
 Use `where` clauses to skip items early rather than applying unconditional transforms.
-
-## Validation
-
-Validate OTTL statements **before** deploying them to the Collector.
-A syntax error in a statement causes the Collector to reject the entire configuration at startup.
-
-### Validation workflow
-
-1. **Write statements** — draft OTTL expressions following the patterns in this skill.
-2. **Test in the playground** — paste the full processor YAML into [ottl.run](https://ottl.run), supply sample telemetry as JSON, and verify the output matches expectations.
-3. **Validate the full config** — run `otelcol validate --config=config.yaml` to catch wiring errors (undeclared components, missing pipelines).
-4. **Smoke-test with the debug exporter** — deploy with a `debug` exporter in the pipeline, send representative telemetry, and inspect stdout to confirm transforms apply correctly.
-
-Use [ottl.run](https://ottl.run) for every non-trivial statement.
-It catches errors that `otelcol validate` does not — such as runtime type mismatches, incorrect `where` clauses, and regex issues — because it executes the statements against real telemetry data rather than only checking structural validity.
-
-### What to test in the playground
-
-| Check | How |
-|-------|-----|
-| Statement compiles | Paste the YAML; the playground reports syntax errors inline |
-| Correct field is modified | Compare input and output JSON side by side |
-| `where` clause filters correctly | Provide one matching and one non-matching telemetry item |
-| `nil` safety | Provide telemetry that is missing the target attribute |
-| Regex patterns | Provide input strings that should and should not match |
 
 ## Function reference
 
