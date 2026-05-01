@@ -7,6 +7,8 @@ Skills are packaged instructions and scripts that extend agent capabilities, fol
 > These skills have been greatly improved using [Tessl](https://tessl.io).
 > Try it out for your own agent skills, it's worth it.
 
+[![tessl](https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.tessl.io%2Fv1%2Fbadges%2Fdash0%2Fagent-skills)](https://tessl.io/registry/dash0/agent-skills)
+
 ## How to use
 
 **Install with [skills](https://skills.sh/) CLI** (universal, works with any [Agent Skills](https://agentskills.io)-compatible tool):
