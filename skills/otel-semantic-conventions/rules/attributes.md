@@ -25,9 +25,9 @@ Wrong attributes — or attributes at the wrong level — make telemetry unquery
    Custom attributes fragment querying and break tooling.
    Only create them for truly domain-specific concepts that have no registry equivalent.
    When you must, use a namespaced prefix (e.g., `com.acme.order.priority`).
-3. **Low cardinality in names, high cardinality in attributes.**
-   Span names and metric attribute values must be bounded.
-   Put variable data (IDs, paths, user inputs) into span attributes instead.
+3. **Low cardinality in metric attributes, high cardinality in span attributes.**
+   Metric attribute values must be bounded.
+   Put variable data (IDs, paths, user inputs) into span attributes, not metric attributes.
 4. **Right level, every time.**
    Place attributes at the correct telemetry level (resource, scope, span, log, metric data point).
    Never duplicate resource-level data on every span.
