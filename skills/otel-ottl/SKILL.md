@@ -258,10 +258,7 @@ processors:
       - context: span
         statements:
           - replace_pattern(span.attributes["client.address"], "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\.\\d{1,3}", "$$1.0") where span.attributes["client.address"] != nil
-    log_statements:
-      - context: log
-        statements:
-          - replace_pattern(log.attributes["client.address"], "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\.\\d{1,3}", "$$1.0") where log.attributes["client.address"] != nil
+    # Add log_statements with the same pattern using log.attributes to apply to logs.
 ```
 
 #### Limit attribute count and value length
@@ -275,11 +272,7 @@ processors:
         statements:
           - limit(span.attributes, 64, [])
           - truncate_all(span.attributes, 256)
-    log_statements:
-      - context: log
-        statements:
-          - limit(log.attributes, 64, [])
-          - truncate_all(log.attributes, 256)
+    # Add log_statements with the same pattern using log.attributes to apply to logs.
 ```
 
 ### Enrich telemetry with static attributes
