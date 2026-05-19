@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.3.0 (2026-05-19)
+
+### Added
+
+- document how to collect parameters for prepared statements across languages
+
+### Changed
+
+- update plugin manifests for v1.3.0
+
+
 ## v1.2.5 (2026-05-04)
 
 ### Changed
