@@ -1,93 +1,54 @@
 # Installation
 
-Install with [skills](https://skills.sh/) CLI (universal, works with any [Agent Skills](https://agentskills.io)-compatible tool):
-
-```bash
-npx skills add https://github.com/dash0hq/agent-skills --all
-# or a single skill:
-npx skills add https://github.com/dash0hq/agent-skills --skill otel-semantic-conventions
-```
-
-## Tessl
-
-```bash
-tessl install dash0/agent-skills
-```
-
-## Antigravity
-
-Clone and symlink into the cross-client discovery path:
-
-```bash
-git clone https://github.com/dash0hq/agent-skills.git ~/.antigravity/skills/dash0-agent-skills
-```
-
-Update with `git -C ~/.antigravity/skills/dash0-agent-skills pull`.
-
 ## Claude Code
 
 ```bash
-/plugin marketplace add dash0hq/claude-marketplace
-/plugin install dash0-agent-skills@dash0
+claude plugin marketplace add johngallagherdynatrace/otel-for-dynatrace
+claude plugin install otel-for-dynatrace@otel-for-dynatrace
 ```
 
-## Codex (OpenAI)
-
-Clone into the cross-client discovery path:
-
-```bash
-git clone https://github.com/dash0hq/agent-skills.git ~/.agents/skills/dash0-agent-skills
-```
-
-Codex auto-discovers skills from `~/.agents/skills/` and `.agents/skills/`.
-Update with `git -C ~/.agents/skills/dash0-agent-skills pull`.
-
-## Copilot
-
-Copy skills into the cross-client discovery directory:
-
-```bash
-/plugin install https://github.com/dash0hq/agent-skills
-# or
-git clone https://github.com/dash0hq/agent-skills.git ~/.copilot/skills/dash0-agent-skills
-```
-
-Copilot auto-discovers skills from `.copilot/skills/`.
+Restart Claude Code after installing. The 4 OTel skills (`otel-collector`, `otel-instrumentation`, `otel-ottl`, `otel-semantic-conventions`) will be available in every session.
 
 ## Cursor
 
-Copy skills into the cross-client discovery directory:
-
 ```bash
-git clone https://github.com/dash0hq/agent-skills.git  ~/.cursor/skills/dash0-agent-skills
+git clone git@github.com:johngallagherdynatrace/otel-for-dynatrace.git ~/.cursor/skills/otel-for-dynatrace
 ```
 
-Cursor auto-discovers skills from `.agents/skills/` and `.cursor/skills/`.
+Update with `git -C ~/.cursor/skills/otel-for-dynatrace pull`.
+
+## Codex (OpenAI)
+
+```bash
+git clone git@github.com:johngallagherdynatrace/otel-for-dynatrace.git ~/.agents/skills/otel-for-dynatrace
+```
+
+Update with `git -C ~/.agents/skills/otel-for-dynatrace pull`.
+
+## Copilot
+
+```bash
+git clone git@github.com:johngallagherdynatrace/otel-for-dynatrace.git ~/.copilot/skills/otel-for-dynatrace
+```
 
 ## Gemini CLI
 
 ```bash
-gemini extensions install https://github.com/dash0hq/agent-skills
+gemini extensions install https://github.com/johngallagherdynatrace/otel-for-dynatrace
 ```
 
-Update with `gemini extensions update dash0-agent-skills`.
+Update with `gemini extensions update otel-for-dynatrace`.
 
 ## Openclaw
 
-Copy skills into the cross-client discovery directory:
-
 ```bash
-git clone https://github.com/dash0hq/agent-skills.git ~/.openclaw/skills/dash0-agent-skills
-# or in workspace:
-git clone https://github.com/dash0hq/agent-skills.git ~/.openclaw/workspace/skills/dash0-agent-skills
+git clone git@github.com:johngallagherdynatrace/otel-for-dynatrace.git ~/.openclaw/skills/otel-for-dynatrace
 ```
 
 ## OpenCode
 
-Copy skills into the cross-client discovery directory:
-
 ```bash
-git clone https://github.com/dash0hq/agent-skills.git ~/.agents/skills/dash0-agent-skills
+git clone git@github.com:johngallagherdynatrace/otel-for-dynatrace.git ~/.agents/skills/otel-for-dynatrace
 ```
 
 OpenCode auto-discovers skills from `.agents/skills/`, `.opencode/skills/`, and `.claude/skills/`.
