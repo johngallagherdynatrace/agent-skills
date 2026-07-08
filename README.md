@@ -1,29 +1,23 @@
-# OpenTelemetry Skills for AI Coding Agents
+# OTel for Dynatrace — Agent Skills
 
-Vendor-neutral skills that teach AI coding agents how to instrument applications with OpenTelemetry.
+Vendor-neutral skills that teach AI coding agents how to instrument applications with OpenTelemetry, configured for Dynatrace as the observability backend.
 Covers SDK setup across languages, semantic conventions, Collector pipelines, and OTTL transformations.
-Works with any OTLP-compatible backend.
 
-Skills are packaged instructions and scripts that extend agent capabilities, following the [Agent Skills](https://agentskills.io/) format.
-Maintained by [Dash0](https://www.dash0.com).
-
-> [!TIP]
-> These skills have been improved using [Tessl](https://tessl.io).
-> Try it out for your own agent skills, it's worth it.
-
-[![tessl](https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.tessl.io%2Fv1%2Fbadges%2Fdash0%2Fagent-skills)](https://tessl.io/registry/dash0/agent-skills)
+Skills are packaged instructions that extend agent capabilities, following the [Agent Skills](https://agentskills.io/) format.
+Originally authored by [Dash0](https://www.dash0.com), extended for Dynatrace by [Dynatrace](https://www.dynatrace.com).
 
 ## Installation
 
-**Install with [skills](https://skills.sh/) CLI** (universal, works with any [Agent Skills](https://agentskills.io)-compatible tool):
+See [INSTALL.md](./INSTALL.md) for full instructions.
+
+**Claude Code (quickstart):**
 
 ```bash
-npx skills add https://github.com/dash0hq/agent-skills --all
-# or a single skill:
-npx skills add https://github.com/dash0hq/agent-skills --skill otel-semantic-conventions
+claude plugin marketplace add johngallagherdynatrace/otel-for-dynatrace
+claude plugin install otel-for-dynatrace@otel-for-dynatrace
 ```
 
-For tool-specific installation instructions (Claude Code, Cursor, Tessl, and others), see [INSTALL.md](./INSTALL.md).
+Restart Claude Code after installing.
 
 ## How to use
 
@@ -37,7 +31,7 @@ Add OpenTelemetry instrumentation to my app
 My traces are broken — spans show up as separate roots instead of a connected trace
 ```
 ```
-Set up an OpenTelemetry Collector pipeline that forwards to Dash0
+Set up an OpenTelemetry Collector pipeline that forwards to Dynatrace
 ```
 ```
 Write an OTTL expression to redact credit card numbers from log bodies
@@ -101,7 +95,7 @@ Covers backend and browser instrumentation across multiple languages.
 - .NET (auto-instrumentation, ASP.NET Core, ActivitySource)
 - Ruby (SDK setup, Rails, Sinatra)
 - PHP (auto-instrumentation, Laravel, Symfony)
-- Browser (OpenTelemetry JS, Dash0 SDK, server correlation)
+- Browser (OpenTelemetry JS, server correlation)
 - Next.js (App Router, full-stack instrumentation, common gotchas)
 
 **Platforms:**
@@ -125,29 +119,29 @@ Expert guidance for selecting, applying, and reviewing OpenTelemetry semantic co
 - Mapping HTTP status codes to span status
 - Reviewing telemetry for semantic convention compliance
 - Migrating from old to new attribute names
-- Understanding Dash0 derived attributes
+- Understanding Dynatrace derived attributes and Davis AI topology requirements
 
 **Rules covered:**
 - Attributes (registry, selection, placement, common attributes by domain, namespaces)
 - Spans (naming patterns, span kind, status code mapping)
-- Versioning (stability levels, migration, Dash0 semantic convention upgrades)
-- Dash0 (derived attributes, feature dependencies)
+- Versioning (stability levels, migration, Dynatrace semantic convention handling)
+- Dynatrace (derived attributes, Davis AI feature dependencies)
 
 ### [otel-collector](./skills/otel-collector/SKILL.md)
 
 Expert guidance for configuring and deploying the OpenTelemetry Collector to receive, process, and export telemetry.
-Covers pipeline configuration, deployment patterns, and forwarding to any OTLP-compatible backend.
+Covers pipeline configuration, deployment patterns, and forwarding to Dynatrace.
 
 **Use when:**
 - Setting up an OpenTelemetry Collector pipeline
 - Configuring receivers, processors, or exporters
 - Deploying the Collector to Kubernetes or Docker
-- Forwarding telemetry to any OTLP-compatible backend
+- Forwarding telemetry to Dynatrace
 - Tuning Collector performance (memory, batching, queuing)
 
 **Rules covered:**
 - Receivers (OTLP, Prometheus, filelog, hostmetrics)
-- Exporters (OTLP/gRPC, debug, authentication, retry, queuing)
+- Exporters (OTLP/HTTP to Dynatrace, debug, authentication, retry, queuing)
 - Processors (memory limiter, batch, resource detection, Kubernetes attributes, ordering)
 - Pipelines (service section, per-signal configuration, connectors, fan-out)
 - Deployment (agent vs gateway, DaemonSet, Deployment, Docker Compose, health checks)
@@ -184,8 +178,8 @@ Claude Code loads this file at the start of every session.
 ```markdown
 # Observability
 
-This project uses OpenTelemetry for observability.
-When adding or modifying instrumentation, follow the guidance from the installed `dash0hq/agent-skills` skills.
+This project uses OpenTelemetry for observability with Dynatrace as the backend.
+When adding or modifying instrumentation, follow the guidance from the installed `otel-for-dynatrace` skills.
 
 When working on application code or deployment specs, use the `otel-instrumentation` skill.
 When working on Collector configuration, use the `otel-collector` skill.
@@ -220,7 +214,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install skills
-        run: npx skills add dash0hq/agent-skills
+        run: |
+          claude plugin marketplace add johngallagherdynatrace/otel-for-dynatrace
+          claude plugin install otel-for-dynatrace@otel-for-dynatrace
 
       - name: Review instrumentation
         run: |
