@@ -14,7 +14,7 @@ See [INSTALL.md](./INSTALL.md) for full instructions.
 
 ```bash
 claude plugin marketplace add johngallagherdynatrace/otel-for-dynatrace
-claude plugin install otel-dt@otel-dt
+claude plugin install otel-dt@otel-for-dynatrace
 ```
 
 Restart Claude Code after installing.
