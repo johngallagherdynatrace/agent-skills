@@ -14,7 +14,7 @@ See [INSTALL.md](./INSTALL.md) for full instructions.
 
 ```bash
 claude plugin marketplace add johngallagherdynatrace/otel-for-dynatrace
-claude plugin install otel-for-dynatrace@otel-for-dynatrace
+claude plugin install otel-dt@otel-dt
 ```
 
 Restart Claude Code after installing.
@@ -43,6 +43,8 @@ Ensure that my HTTP server spans have the correct attributes
 Help me fix high-cardinality metrics that are blowing up my costs
 ```
 
+You can also invoke skills explicitly by name (e.g. `/otel-dt:review-instrumentation 42` to review PR #42).
+
 ## Why vendor-neutral OpenTelemetry
 
 These skills are built around the OpenTelemetry specification, not any single backend.
@@ -70,6 +72,28 @@ The spec defines impact-weighted rules across resources, spans, metrics, and log
 Following this guidance helps your services score higher, which means better observability outcomes downstream.
 
 ## Available skills
+
+### [review-instrumentation](./skills/review-instrumentation/SKILL.md)
+
+Reviews OpenTelemetry instrumentation changes for correctness and semantic convention compliance.
+Invoke explicitly with `/otel-dt:review-instrumentation` — optionally pass a PR number or URL.
+
+**Use when:**
+- Reviewing a pull request that adds or modifies instrumentation
+- Checking your current branch changes before opening a PR
+- Auditing spans, metrics, logs, or resource attributes against OTel best practices
+
+**Checks:**
+- Span naming, kind, status codes, and lifecycle (`span.end()` always called)
+- Exception recording and error handling
+- Semantic convention compliance (attribute names, deprecated names)
+- Resource attributes (`service.name`, `service.version`, `deployment.environment.name`)
+- Metric instrument types, units, and naming
+- Log severity and trace context correlation
+- Sensitive data (PII, credentials) in attribute values or log bodies
+- Context propagation (extraction on inbound, injection on outbound)
+
+**Verdict:** `PASS`, `PASS WITH WARNINGS`, or `FAIL`
 
 ### [otel-instrumentation](./skills/otel-instrumentation/SKILL.md)
 
@@ -179,12 +203,13 @@ Claude Code loads this file at the start of every session.
 # Observability
 
 This project uses OpenTelemetry for observability with Dynatrace as the backend.
-When adding or modifying instrumentation, follow the guidance from the installed `otel-for-dynatrace` skills.
+When adding or modifying instrumentation, follow the guidance from the installed `otel-dt` skills.
 
-When working on application code or deployment specs, use the `otel-instrumentation` skill.
-When working on Collector configuration, use the `otel-collector` skill.
-When choosing or reviewing telemetry attributes, use the `otel-semantic-conventions` skill.
-When writing or debugging OTTL expressions, use the `otel-ottl` skill.
+When working on application code or deployment specs, use the `otel-dt:otel-instrumentation` skill.
+When working on Collector configuration, use the `otel-dt:otel-collector` skill.
+When choosing or reviewing telemetry attributes, use the `otel-dt:otel-semantic-conventions` skill.
+When writing or debugging OTTL expressions, use the `otel-dt:otel-ottl` skill.
+When reviewing instrumentation changes in a PR or branch, use the `otel-dt:review-instrumentation` skill.
 ```
 
 ### Headless mode in CI/CD
@@ -194,10 +219,8 @@ This enables automated instrumentation reviews, skill-guided code generation, an
 
 ```bash
 # Review instrumentation quality on a pull request
-claude -p "Review the OpenTelemetry instrumentation changes in this PR. \
-  Check for missing context propagation, incorrect span status handling, \
-  and semantic convention violations." \
-  --allowedTools "Read,Grep,Glob"
+claude -p "/otel-dt:review-instrumentation $PR_NUMBER" \
+  --allowedTools "Read,Bash,Glob"
 ```
 
 #### GitHub Actions example
@@ -216,14 +239,12 @@ jobs:
       - name: Install skills
         run: |
           claude plugin marketplace add johngallagherdynatrace/otel-for-dynatrace
-          claude plugin install otel-for-dynatrace@otel-for-dynatrace
+          claude plugin install otel-dt@otel-dt
 
       - name: Review instrumentation
         run: |
-          claude -p "Review the OpenTelemetry instrumentation in this PR \
-            for correctness and semantic convention compliance. \
-            Post your findings as a summary." \
-            --allowedTools "Read,Grep,Glob" \
+          claude -p "/otel-dt:review-instrumentation ${{ github.event.pull_request.number }}" \
+            --allowedTools "Read,Bash,Glob" \
             --output-format json > review.json
 
       - name: Comment on PR
