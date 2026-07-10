@@ -18,7 +18,7 @@
         "source": "github",
         "repo": "johngallagherdynatrace/otel-for-dynatrace",
         "ref": "main",
-        "sha": "01fe7a019241af4c90a464bef692a2c36ec49e0d"
+        "sha": "934939e7dad8afcd20a299b6c97531643556a888"
       },
       "homepage": "https://github.com/johngallagherdynatrace/otel-for-dynatrace"
     }
