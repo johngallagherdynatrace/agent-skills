@@ -1,57 +1,46 @@
 # OTel for Dynatrace — Agent Skills
 
 Vendor-neutral skills that teach AI coding agents how to instrument applications with OpenTelemetry, configured for Dynatrace as the observability backend.
+
 Covers SDK setup across languages, semantic conventions, Collector pipelines, and OTTL transformations.
 
 Skills are packaged instructions that extend agent capabilities, following the [Agent Skills](https://agentskills.io/) format.
+
 Originally authored by [Dash0](https://www.dash0.com), extended for Dynatrace by [Dynatrace](https://www.dynatrace.com).
 
 ## Installation
 
-See [INSTALL.md](./INSTALL.md) for full instructions.
-
-**Claude Code (quickstart):**
+### Claude
 
 ```bash
 claude plugin marketplace add johngallagherdynatrace/otel-for-dynatrace
-claude plugin install otel-dt@otel-for-dynatrace
+claude plugin install otel-dt@otel-dt
+
+# In Claude
+/reload-plugins
 ```
 
-Restart Claude Code after installing.
+## Usage
 
-## How to use
+**Review instrumentation**
 
-Once installed, skills load automatically and the agent picks them up when a task matches.
-
-**Examples:**
 ```
-Add OpenTelemetry instrumentation to my app
-```
-```
-My traces are broken — spans show up as separate roots instead of a connected trace
-```
-```
-Set up an OpenTelemetry Collector pipeline that forwards to Dynatrace
-```
-```
-Write an OTTL expression to redact credit card numbers from log bodies
-```
-```
-Ensure that my HTTP server spans have the correct attributes
-```
-```
-Help me fix high-cardinality metrics that are blowing up my costs
+/review-ins
+# Hit Tab
+/otel-dt:review-instrumentation
 ```
 
-You can also invoke skills explicitly by name (e.g. `/otel-dt:review-instrumentation 42` to review PR #42).
+**Review instrumentation in PR 1234**
 
-## Why vendor-neutral OpenTelemetry
+```
+/otel-dt:review-instrumentation 1234
+```
 
-These skills are built around the OpenTelemetry specification, not any single backend.
-The output is standard OTLP telemetry that any OpenTelemetry-compatible backend can ingest.
+**Add instrumentation**
 
-Vendor lock-in in observability comes from proprietary agents and attribute schemas.
-Skills in this repository avoid both: they guide agents to use OpenTelemetry SDKs and the OpenTelemetry Collector, and to follow the upstream [Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/) for attribute, span, and metric naming.
+```
+Add OpenTelemetry instrumentation to my Go service
+```
 
 ## Why semantic conventions matter
 
