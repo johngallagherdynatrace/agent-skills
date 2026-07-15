@@ -24,7 +24,7 @@ claude plugin install otel-dt@otel-dt
 
 **Review instrumentation**
 
-```
+```bash
 /review-ins
 # Hit Tab
 /otel-dt:review-instrumentation
@@ -32,7 +32,7 @@ claude plugin install otel-dt@otel-dt
 
 **Review instrumentation in PR 1234**
 
-```
+```bash
 /otel-dt:review-instrumentation 1234
 ```
 
